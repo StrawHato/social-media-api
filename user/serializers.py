@@ -32,6 +32,23 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
+class UserListSerializer(serializers.ModelSerializer):
+    followers_count = serializers.IntegerField(read_only=True)
+    following_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = get_user_model()
+        fields = (
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "followers_count",
+            "following_count",
+        )
+
+
 class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
