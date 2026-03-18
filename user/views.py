@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
+from django.db.models import Count
 from rest_framework import generics, viewsets
 
-from user.serializers import UserSerializer
+from user.serializers import UserSerializer, UserListSerializer
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -9,5 +10,8 @@ class CreateUserView(generics.CreateAPIView):
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = get_user_model().objects.all()
-    serializer_class = UserSerializer
+    queryset = get_user_model().objects.annotate(
+        followers_count=Count("followers"),
+        following_count=Count("following"),
+    )
+    serializer_class = UserListSerializer
