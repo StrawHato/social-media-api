@@ -14,9 +14,12 @@ class CreateUserView(generics.CreateAPIView):
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = get_user_model().objects.annotate(
+    queryset = (get_user_model().objects.
+        prefetch_related("followers__follower").
+        annotate(
         followers_count=Count("followers"),
         following_count=Count("following"),
+        )
     )
     serializer_class = UserListSerializer
 
