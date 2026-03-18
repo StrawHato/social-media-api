@@ -54,13 +54,12 @@ def upload_avatar_path(instance, filename):
 
 
 class User(AbstractUser):
-    username = None
     email = models.EmailField(_("email address"), unique=True)
     avatar = models.ImageField(_("avatar"), upload_to=upload_avatar_path, null=True, blank=True)
     bio = models.CharField(_("bio"), max_length=255, null=True, blank=True)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ["username"]
 
     objects = UserManager()
 
