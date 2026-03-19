@@ -1,7 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Count
-from django.template.context_processors import request
-from rest_framework import generics, viewsets, status
+from rest_framework import (
+    generics,
+    viewsets,
+    status,
+    permissions
+)
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -9,12 +13,22 @@ from user.models import Follow
 from user.serializers import (
     UserSerializer,
     UserListSerializer,
-    UserDetailSerializer, UserShortSerializer, FollowSerializer
+    UserDetailSerializer,
+    UserShortSerializer,
+    UserProfileSerializer
 )
 
 
 class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
+
+
+class ManageUserView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        return self.request.user
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):

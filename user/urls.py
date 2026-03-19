@@ -8,7 +8,8 @@ from rest_framework import routers
 
 from user.views import (
     CreateUserView,
-    UserViewSet
+    UserViewSet,
+    ManageUserView
 )
 
 
@@ -18,6 +19,7 @@ router.register("users", UserViewSet)
 urlpatterns = [
     path("", include(router.urls)),
     path("registration/", CreateUserView.as_view(), name="create"),
+    path("me/", ManageUserView.as_view(), name="me"),
     path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
