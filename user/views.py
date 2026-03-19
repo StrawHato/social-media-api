@@ -46,6 +46,22 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
             return UserDetailSerializer
         return UserListSerializer
 
+    def get_queryset(self):
+        username = self.request.query_params.get("username")
+        name = self.request.query_params.get("name")
+        surname = self.request.query_params.get("surname")
+
+        if username:
+            return self.queryset.filter(username__icontains=username)
+
+        if name:
+            return self.queryset.filter(first_name__icontains=name)
+
+        if surname:
+            return self.queryset.filter(last_name__icontains=surname)
+
+        return self.queryset
+
     @action(detail=True, methods=["post"])
     def follow(self, request, pk=None):
         target_user = self.get_object()
