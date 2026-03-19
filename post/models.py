@@ -28,7 +28,7 @@ class Comment(models.Model):
 def upload_post_picture(instance, filename):
     """Upload a post picture."""
     ext = filename.split(".")[-1]
-    filename = f"{slugify(instance.username)}-{uuid.uuid4()}.{ext}"
+    filename = f"{slugify(instance.owner.username)}-{uuid.uuid4()}.{ext}"
 
     return os.path.join("uploads/posts/", filename)
 
