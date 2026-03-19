@@ -9,7 +9,7 @@ from user.models import Follow
 from user.serializers import (
     UserSerializer,
     UserListSerializer,
-    UserDetailSerializer
+    UserDetailSerializer, UserShortSerializer, FollowSerializer
 )
 
 
@@ -80,3 +80,27 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
             {"error": "You are not following this user!"},
             status=status.HTTP_400_BAD_REQUEST
         )
+
+    @action(detail=True, methods=["get"])
+    def following(self, request, pk=None):
+        target_user = self.get_object()
+        following = target_user.following.all()
+
+        serializer = UserShortSerializer(
+            [f.following for f in following],
+            many=True
+        )
+
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+    @action(detail=True, methods=["get"])
+    def followers(self, request, pk=None):
+        target_user = self.get_object()
+        followers = target_user.followers.all()
+
+        serializer = UserShortSerializer(
+            [f.follower for f in followers],
+            many=True
+        )
+
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
