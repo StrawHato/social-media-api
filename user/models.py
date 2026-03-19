@@ -48,7 +48,7 @@ class UserManager(BaseUserManager):
 def upload_avatar_path(instance, filename):
     """Upload an avatar."""
     ext = filename.split(".")[-1]
-    filename = f"{slugify(instance.name)}-{uuid.uuid4()}{ext}"
+    filename = f"{slugify(instance.username)}-{uuid.uuid4()}.{ext}"
 
     return os.path.join("uploads/avatars/", filename)
 
