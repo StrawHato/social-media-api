@@ -7,8 +7,18 @@ from user.models import Follow
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ("id", "email", "username", "first_name", "last_name", "is_staff", "password")
-        read_only_fields = ("id", "is_staff")
+        fields = (
+            "id",
+            "email",
+            "username",
+            "first_name",
+            "last_name",
+            "bio",
+            "avatar",
+            "is_staff",
+            "password"
+        )
+        read_only_fields = ("id", "is_staff", "avatar", "bio")
         extra_kwargs = {
             "password": {
                 "write_only": True,
@@ -30,6 +40,11 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
 
         return user
+
+
+class UserProfileSerializer(UserSerializer):
+    avatar = serializers.ImageField(required=False)
+    bio = serializers.CharField(allow_blank=True)
 
 
 class UserListSerializer(serializers.ModelSerializer):
