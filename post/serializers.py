@@ -23,3 +23,32 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ("id", "content", "owner", "picture", "hashtags")
         read_only_fields = ("id", "owner",)
+
+
+class PostListDetailSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source="owner.username")
+    hashtags = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field="name"
+    )
+    likes = serializers.IntegerField(
+        source="likes_count",
+        read_only=True
+    )
+    comments = serializers.IntegerField(
+        source="comments_count",
+        read_only=True
+    )
+
+    class Meta:
+        model = Post
+        fields = (
+            "id",
+            "content",
+            "owner",
+            "picture",
+            "hashtags",
+            "likes",
+            "comments"
+        )
