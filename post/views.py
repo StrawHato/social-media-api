@@ -67,7 +67,7 @@ class PostViewSet(viewsets.ModelViewSet):
             return CommentSerializer
         return PostSerializer
 
-    @action(detail=True, methods=["post"])
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
     def like(self, request, pk=None):
         target_post = self.get_object()
 
@@ -108,14 +108,14 @@ class PostViewSet(viewsets.ModelViewSet):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    @action(detail=True, methods=["GET"])
+    @action(detail=True, methods=["GET"], permission_classes=[IsAuthenticated])
     def comments(self, request, pk=None):
         target_post = self.get_object()
         comments = target_post.comments.all()
         serializer = self.get_serializer(comments, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["post"])
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
     def comment(self, request, pk=None):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
