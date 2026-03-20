@@ -22,8 +22,8 @@ class PostViewSet(viewsets.ModelViewSet):
         Post.objects.select_related("owner")
         .prefetch_related("hashtags")
         .annotate(
-            likes_count=Count("likes"),
-            comments_count=Count("comments"),
+            likes_count=Count("likes", distinct=True),
+            comments_count=Count("comments", distinct=True),
         )
     )
     serializer_class = PostSerializer
