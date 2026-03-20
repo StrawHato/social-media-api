@@ -16,7 +16,9 @@ class HashtagSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ("id", "content", "owner")
+        fields = ("id", "content", "owner", "post")
+        read_only_fields = ("owner", "post")
+
 
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
