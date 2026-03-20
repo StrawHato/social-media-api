@@ -1,5 +1,5 @@
 from django.db.models import Count
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -10,7 +10,7 @@ from post.serializers import (
     HashtagSerializer,
     PostSerializer,
     PostListDetailSerializer,
-    CommentSerializer
+    CommentSerializer, CommentListDetailSerializer
 )
 
 
@@ -121,9 +121,19 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CommentViewSet(viewsets.ModelViewSet):
+class CommentViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
     queryset = Comment.objects.select_related(
         "owner", "post"
     )
     serializer_class = CommentSerializer
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly,)
+
+    def get_serializer_class(self):
+        if self.action in ("list", "retrieve"):
+            return CommentListDetailSerializer
+        return CommentSerializer

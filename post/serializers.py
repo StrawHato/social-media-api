@@ -20,6 +20,11 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ("owner", "post")
 
 
+class CommentListDetailSerializer(CommentSerializer):
+    owner = serializers.ReadOnlyField(source="owner.username")
+    post = serializers.ReadOnlyField(source="post.content")
+
+
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
