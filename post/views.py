@@ -7,7 +7,8 @@ from post.models import Hashtag, Post, Like
 from post.serializers import (
     HashtagSerializer,
     PostSerializer,
-    PostListDetailSerializer
+    PostListDetailSerializer,
+    CommentSerializer
 )
 
 
@@ -53,10 +54,11 @@ class PostViewSet(viewsets.ModelViewSet):
             )
         return queryset
 
-
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
             return PostListDetailSerializer
+        if self.action in ("comment", "comments"):
+            return CommentSerializer
         return PostSerializer
 
     @action(detail=True, methods=["post"])
@@ -99,3 +101,10 @@ class PostViewSet(viewsets.ModelViewSet):
             {"Error": "Your like doesn't exist"},
             status=status.HTTP_400_BAD_REQUEST
         )
+
+    @action(detail=True, methods=["GET"])
+    def comments(self, request, pk=None):
+        target_post = self.get_object()
+        comments = target_post.comments.all()
+        serializer = self.get_serializer(comments, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
