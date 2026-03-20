@@ -4,9 +4,9 @@ from rest_framework import (
     generics,
     viewsets,
     status,
-    permissions
 )
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from user.models import Follow
@@ -25,7 +25,7 @@ class CreateUserView(generics.CreateAPIView):
 
 class ManageUserView(generics.RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get_object(self):
         return self.request.user
@@ -40,6 +40,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         )
     )
     serializer_class = UserListSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get_serializer_class(self):
         if self.action == "retrieve":

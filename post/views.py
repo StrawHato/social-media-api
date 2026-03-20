@@ -1,6 +1,7 @@
 from django.db.models import Count
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from post.models import Hashtag, Post, Like
@@ -15,6 +16,7 @@ from post.serializers import (
 class HashtagViewSet(viewsets.ModelViewSet):
     queryset = Hashtag.objects.all()
     serializer_class = HashtagSerializer
+    permission_classes = (IsAuthenticated,)
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -27,6 +29,7 @@ class PostViewSet(viewsets.ModelViewSet):
         )
     )
     serializer_class = PostSerializer
+    permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
