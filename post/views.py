@@ -108,3 +108,10 @@ class PostViewSet(viewsets.ModelViewSet):
         comments = target_post.comments.all()
         serializer = self.get_serializer(comments, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["post"])
+    def comment(self, request, pk=None):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(owner=self.request.user, post=self.get_object())
+        return Response(serializer.data, status=status.HTTP_200_OK)
