@@ -1,8 +1,14 @@
 from django.db.models import Count
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
-from post.models import Hashtag, Post
-from post.serializers import HashtagSerializer, PostSerializer, PostListDetailSerializer
+from post.models import Hashtag, Post, Like
+from post.serializers import (
+    HashtagSerializer,
+    PostSerializer,
+    PostListDetailSerializer
+)
 
 
 class HashtagViewSet(viewsets.ModelViewSet):
@@ -52,3 +58,44 @@ class PostViewSet(viewsets.ModelViewSet):
         if self.action in ("list", "retrieve"):
             return PostListDetailSerializer
         return PostSerializer
+
+    @action(detail=True, methods=["post"])
+    def like(self, request, pk=None):
+        target_post = self.get_object()
+
+        like, created = Like.objects.get_or_create(
+            post=target_post,
+            user=request.user,
+        )
+
+        if not created:
+            return Response(
+                {"Error": "You are already liked"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return Response(
+            {"Success": "You liked this post"},
+            status=status.HTTP_200_OK
+        )
+
+    @like.mapping.delete
+    def unlike(self, request, pk=None):
+        target_post = self.get_object()
+        like = Like.objects.filter(
+                post=target_post,
+                user=request.user
+        )
+
+        if like.exists():
+            like.delete()
+
+            return Response(
+                {"Status": "You unliked this post"},
+                status=status.HTTP_200_OK
+            )
+
+        return Response(
+            {"Error": "Your like doesn't exist"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
