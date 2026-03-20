@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from post.models import Hashtag, Post, Like
+from post.permissions import IsOwnerOrReadOnly
 from post.serializers import (
     HashtagSerializer,
     PostSerializer,
@@ -29,7 +30,7 @@ class PostViewSet(viewsets.ModelViewSet):
         )
     )
     serializer_class = PostSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly,)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
