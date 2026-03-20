@@ -1,4 +1,6 @@
 from django.db.models import Count
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, status, mixins
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -46,7 +48,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
         if author:
             queryset = queryset.filter(
-                owner__username=author,
+                owner__username__icontains=author,
             )
         if content:
             queryset = queryset.filter(
@@ -119,6 +121,29 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save(owner=self.request.user, post=self.get_object())
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="hashtags",
+                type={"type": "list", "items": {"type": "number"}},
+                description="Filter by hashtags (ex. ?hashtags=1,2)",
+            ),
+            OpenApiParameter(
+                name="author",
+                type=OpenApiTypes.STR,
+                description="Filter by author (ex. ?author=username)",
+            ),
+            OpenApiParameter(
+                name="content",
+                type=OpenApiTypes.STR,
+                description="Filter by content (ex. ?content=part of content)",
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        """Returns a filtered list of posts."""
+        return super(PostViewSet, self).list(request, *args, **kwargs)
 
 
 class CommentViewSet(

@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Count
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import (
     generics,
     viewsets,
@@ -135,3 +137,26 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         )
 
         return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="username",
+                type=OpenApiTypes.STR,
+                description="Filter by username (ex. username=username)",
+            ),
+            OpenApiParameter(
+                name="name",
+                type=OpenApiTypes.STR,
+                description="Filter by username (ex. name=Maks)",
+            ),
+            OpenApiParameter(
+                name="surname",
+                type=OpenApiTypes.STR,
+                description="Filter by username (ex. surname=White)",
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        """Returns a filtered list of users."""
+        return super(UserViewSet, self).list(request, *args, **kwargs)
