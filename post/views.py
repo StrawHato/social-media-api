@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from post.models import Hashtag, Post, Like
+from post.models import Hashtag, Post, Like, Comment
 from post.permissions import IsOwnerOrReadOnly
 from post.serializers import (
     HashtagSerializer,
@@ -119,3 +119,11 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save(owner=self.request.user, post=self.get_object())
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.select_related(
+        "owner", "post"
+    )
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly,)
